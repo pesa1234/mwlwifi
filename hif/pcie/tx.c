@@ -970,7 +970,7 @@ void pcie_tx_xmit(struct ieee80211_hw *hw,
 	tx_ctrl->type = (mgmtframe ? IEEE_TYPE_MANAGEMENT : IEEE_TYPE_DATA);
 	tx_ctrl->xmit_control = xmitcontrol;
 
-	if (sta && (sta->ht_cap.ht_supported || sta->vht_cap.vht_supported)
+	if (sta && (sta->deflink.ht_cap.ht_supported || sta->deflink.vht_cap.vht_supported)
 	    && !eapol_frame &&
 	    ieee80211_is_data_qos(wh->frame_control)) {
 		tid = qos & 0xf;
