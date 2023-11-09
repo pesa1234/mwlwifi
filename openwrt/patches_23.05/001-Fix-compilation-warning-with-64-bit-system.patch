@@ -1,0 +1,54 @@
+diff --git a/debugfs.c b/debugfs.c
+index f8201ab..9500a94 100644
+--- a/debugfs.c
++++ b/debugfs.c
+@@ -1348,7 +1348,7 @@ done:
+ 				 priv->reg_value);
+ 	else
+ 		len += scnprintf(p + len, size - len,
+-				 "error: %d(%u 0x%08x 0x%08x)\n",
++				 "error: %zd(%u 0x%08x 0x%08x)\n",
+ 				 ret, priv->reg_type, priv->reg_offset,
+ 				 priv->reg_value);
+ 
+diff --git a/hif/fwcmd.c b/hif/fwcmd.c
+index e3d9fc0..12ff95d 100644
+--- a/hif/fwcmd.c
++++ b/hif/fwcmd.c
+@@ -3540,7 +3540,7 @@ int mwl_fwcmd_get_fw_core_dump(struct ieee80211_hw *hw,
+ 	core_dump->size_kb = pcmd->cmd_data.coredump.size_kb;
+ 	core_dump->flags = pcmd->cmd_data.coredump.flags;
+ 	memcpy(buff,
+-	       (const void *)((u32)pcmd +
++	       (const void *)((uintptr_t)pcmd +
+ 	       sizeof(struct hostcmd_cmd_get_fw_core_dump) -
+ 	       sizeof(struct hostcmd_cmd_get_fw_core_dump_)),
+ 	       MAX_CORE_DUMP_BUFFER);
+diff --git a/hif/pcie/8964/tx_ndp.c b/hif/pcie/8964/tx_ndp.c
+index 514742d..0950135 100644
+--- a/hif/pcie/8964/tx_ndp.c
++++ b/hif/pcie/8964/tx_ndp.c
+@@ -336,7 +336,7 @@ int pcie_tx_init_ndp(struct ieee80211_hw *hw)
+ 
+ 	if (sizeof(struct pcie_tx_ctrl_ndp) >
+ 	    sizeof(tx_info->driver_data)) {
+-		wiphy_err(hw->wiphy, "driver data is not enough: %d (%d)\n",
++		wiphy_err(hw->wiphy, "driver data is not enough: %zu (%zu)\n",
+ 			  sizeof(struct pcie_tx_ctrl_ndp),
+ 			  sizeof(tx_info->driver_data));
+ 		return -ENOMEM;
+diff --git a/hif/pcie/pcie.c b/hif/pcie/pcie.c
+index c719d5f..1ce3213 100644
+--- a/hif/pcie/pcie.c
++++ b/hif/pcie/pcie.c
+@@ -1515,8 +1515,8 @@ static void pcie_bf_mimo_ctrl_decode(struct mwl_priv *priv,
+ 			       &fp_data->f_pos);
+ 		filp_close(fp_data, current->files);
+ 	} else {
+-		wiphy_err(priv->hw->wiphy, "Error opening %s! %x\n",
+-			  filename, (unsigned int)fp_data);
++		wiphy_err(priv->hw->wiphy, "Error opening %s! %ld\n",
++			  filename, PTR_ERR(fp_data));
+ 	}
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0)
